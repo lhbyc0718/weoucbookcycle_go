@@ -18,7 +18,7 @@ type JWTConfig struct {
 // GetJWTConfig 获取JWT配置
 func GetJWTConfig() *JWTConfig {
 	return &JWTConfig{
-		SecretKey:      getEnv("JWT_SECRET", "your-secret-key-change-in-production"),
+		SecretKey:      GetEnv("JWT_SECRET", "your-secret-key-change-in-production"),
 		ExpirationTime: time.Hour * 24 * 7, // 7天
 		Issuer:         "weoucbookcycle",
 	}

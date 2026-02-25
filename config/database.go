@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -25,14 +24,36 @@ type DatabaseConfig struct {
 
 // GetDatabaseConfig 从环境变量获取数据库配置
 func GetDatabaseConfig() *DatabaseConfig {
+	host := GetEnv("DB_HOST", "localhost")
+	port := GetEnv("DB_PORT", "3306")
+	user := GetEnv("DB_USER", "root")
+	password := GetEnv("DB_PASSWORD", "")
+	dbName := GetEnv("DB_NAME", "weoucbookcycle")
+	charset := GetEnv("DB_CHARSET", "utf8mb4")
+
+	// 调试输出：显示实际读取的值
+	log.Printf("📋 Database Config Loaded:\n  Host: %s\n  Port: %s\n  User: %s\n  DBName: %s\n  Password: %s\n  Charset: %s\n",
+		host, port, user, dbName, maskPassword(password), charset)
+
 	return &DatabaseConfig{
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "3306"),
-		User:     getEnv("DB_USER", "root"),
-		Password: getEnv("DB_PASSWORD", ""),
-		DBName:   getEnv("DB_NAME", "weoucbookcycle"),
-		Charset:  getEnv("DB_CHARSET", "utf8mb4"),
+		Host:     host,
+		Port:     port,
+		User:     user,
+		Password: password,
+		DBName:   dbName,
+		Charset:  charset,
 	}
+}
+
+// maskPassword 掩盖密码（只显示前2个字符）
+func maskPassword(pwd string) string {
+	if len(pwd) == 0 {
+		return "(empty)"
+	}
+	if len(pwd) <= 2 {
+		return "***"
+	}
+	return pwd[:2] + "***"
 }
 
 // InitDatabase 初始化数据库连接
@@ -51,7 +72,7 @@ func InitDatabase() error {
 
 	// 配置Gorm日志
 	logLevel := logger.Silent
-	if getEnv("GIN_MODE", "release") == "debug" {
+	if GetEnv("GIN_MODE", "release") == "debug" {
 		logLevel = logger.Info
 	}
 
@@ -90,12 +111,4 @@ func CloseDatabase() error {
 		return err
 	}
 	return sqlDB.Close()
-}
-
-// getEnv 获取环境变量，如果不存在则返回默认值
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
 }

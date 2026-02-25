@@ -16,9 +16,9 @@ var RedisClient *redis.Client
 
 // InitializeRedis 初始化 Redis 客户端
 func InitializeRedis() error {
-	redisAddr := getEnv("REDIS_ADDR", "localhost:6379")
-	redisPassword := getEnv("REDIS_PASSWORD", "")
-	redisDB := getEnv("REDIS_DB", "0")
+	redisAddr := GetEnv("REDIS_ADDR", "localhost:6379")
+	redisPassword := GetEnv("REDIS_PASSWORD", "")
+	redisDB := GetEnv("REDIS_DB", "0")
 
 	// 解析数据库编号
 	db := 0
@@ -71,11 +71,11 @@ type ServerConfig struct {
 
 // GetServerConfig 获取服务器配置
 func GetServerConfig() *ServerConfig {
-	redisEnabled := getEnv("REDIS_ENABLED", "true") == "true"
+	redisEnabled := GetEnv("REDIS_ENABLED", "true") == "true"
 
 	return &ServerConfig{
-		Port:         getEnv("SERVER_PORT", "8080"),
-		Mode:         getEnv("GIN_MODE", "debug"),
+		Port:         GetEnv("SERVER_PORT", "8080"),
+		Mode:         GetEnv("GIN_MODE", "debug"),
 		ReadTimeout:  30,
 		WriteTimeout: 30,
 		RedisEnabled: redisEnabled,

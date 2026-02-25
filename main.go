@@ -3,13 +3,23 @@ package main
 import (
 	"log"
 	"os"
+
 	"weoucbookcycle_go/config"
 	"weoucbookcycle_go/middleware"
 	"weoucbookcycle_go/routes"
 	"weoucbookcycle_go/websocket"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// 加载 .env 文件
+	if err := godotenv.Load(); err != nil {
+		log.Println("⚠️  No .env file found, using system environment variables")
+	} else {
+		log.Println("✅ .env file loaded successfully")
+	}
+
 	//设置环境
 	env := os.Getenv("GIN_MODE")
 	if env == "" {
@@ -46,10 +56,10 @@ func main() {
 	// 注册自定义路由
 	routes.SetupRoutes(r)
 
-	//注册websocket路由
-	r.GET("/ws", websocket.HandleConnection)
-
 	if err := config.StartServer(); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
+
+	r.Run(":8080")
+
 }

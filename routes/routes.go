@@ -14,19 +14,11 @@ func SetupRoutes(r *gin.Engine) {
 	r.Use(middleware.CORS())
 	r.Use(middleware.Logger())
 
-	// 健康检查端点
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":  "ok",
-			"message": "Server is running",
-		})
-	})
-
 	// API v1 路由组
-	v1 := r.Group("/api/v1")
+	api := r.Group("/api/v1")
 	{
 		// ====== 认证路由 (无需认证) ======
-		auth := v1.Group("/auth")
+		auth := api.Group("/auth")
 		{
 			auth.POST("/register", controllers.NewAuthController().Register)
 			auth.POST("/login", controllers.NewAuthController().Login)
@@ -39,7 +31,7 @@ func SetupRoutes(r *gin.Engine) {
 		}
 
 		// ====== 用户路由 ======
-		users := v1.Group("/users")
+		users := api.Group("/users")
 		{
 			users.GET("/active", controllers.NewUserController().GetActiveUsers)
 			users.GET("/online", controllers.NewUserController().GetOnlineUsers)
@@ -48,7 +40,7 @@ func SetupRoutes(r *gin.Engine) {
 		}
 
 		// ====== 书籍路由 ======
-		books := v1.Group("/books")
+		books := api.Group("/books")
 		{
 			books.GET("", controllers.NewBookController().GetBooks)
 			books.GET("/hot", controllers.NewBookController().GetHotBooks)
@@ -62,7 +54,7 @@ func SetupRoutes(r *gin.Engine) {
 		}
 
 		// ====== 发布路由 ======
-		listings := v1.Group("/listings")
+		listings := api.Group("/listings")
 		{
 			listings.GET("", controllers.NewListingController().GetListings)
 			listings.GET("/mine", middleware.AuthMiddleware(), controllers.NewListingController().GetMyListings)
@@ -73,7 +65,7 @@ func SetupRoutes(r *gin.Engine) {
 		}
 
 		// ====== 聊天路由 ======
-		chats := v1.Group("/chats")
+		chats := api.Group("/chats")
 		{
 			chats.GET("", middleware.AuthMiddleware(), controllers.NewChatController().GetChats)
 			chats.GET("/unread", middleware.AuthMiddleware(), controllers.NewChatController().GetUnreadCount)
@@ -87,7 +79,7 @@ func SetupRoutes(r *gin.Engine) {
 		}
 
 		// ====== 搜索路由 ======
-		search := v1.Group("/search")
+		search := api.Group("/search")
 		{
 			search.GET("", controllers.NewSearchController().GlobalSearch)
 			search.GET("/users", controllers.NewSearchController().SearchUsers)
