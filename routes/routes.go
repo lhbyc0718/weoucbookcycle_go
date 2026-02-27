@@ -14,8 +14,9 @@ func SetupRoutes(r *gin.Engine) {
 	r.Use(middleware.CORS())
 	r.Use(middleware.Logger())
 
-	// API v1 路由组
-	api := r.Group("/api/v1")
+	// API 路由组（弃用版本号或与前端环境变量保持一致）
+	// 之前使用 /api/v1，如果前端直接请求 /api，可以在这里修改。
+	api := r.Group("/api")
 	{
 		// ====== 认证路由 (无需认证) ======
 		auth := api.Group("/auth")
